@@ -1,0 +1,12 @@
+---
+# Config
+# Chat prefix to treat as staff chat
+# This will work if the prefix is more then one character long
+prefix: "."
+# Automatically attaches console into staff chat on startup
+auto-attach: true
+# Chat Format
+# Colour code info, this uses PMMP TextFormat constants, ![constant] casing is automatically dealt with
+# This https://github.com/pmmp/PocketMine-MP/blob/master/src/pocketmine/utils/TextFormat.php show all the available constants
+format: "![bold]![gold]<Staff>![reset]![white]%sender%![yellow]![bold]>![reset] ![white]%msg%"
+...

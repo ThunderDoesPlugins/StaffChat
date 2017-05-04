@@ -1,0 +1,25 @@
+name: StaffChat
+version: 1.0.0
+api: [2.0.0,3.0.0-ALPHA4,3.0.0-ALPHA5]
+author: Thunder33345
+description:
+main: Thunder33345\StaffChat\StaffChat
+
+commands:
+  staffchat:
+    description: "Staff chat command"
+    aliases: ['sc']
+
+permissions:
+  staffchat:
+    default: op
+    children:
+      staffchat.read:
+        default: op
+        description: "Read from staff chat"
+      staffchat.chat:
+        default: op
+        description: "Chat into staff chat"
+      staffchat.attach:
+        default: op
+        description: "Attach console into staff chat"
