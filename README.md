@@ -7,7 +7,7 @@ Allows you to create staff chat
 
 commands:
 
-| Command             | popurse                                                  |
+| Command             | purpose                                                  |
 |---------------------|----------------------------------------------------------|
 | say                 | send a message to staff channel                          |
 | on/off/toggle       | switch current chat mode(chats directly into staff chat) |
@@ -20,6 +20,6 @@ Configs:
 |--------------|----------------------------------------------------------------------------------------------------------------|
 | prefix       | Used to send a message directly into staff chat Example: ".hello staff" you may set it to any value you prefer |
 | auto-attach  | Automatically make console listen to staff chat on start?                                                      |
-| format       | Staff chat formmating example: "![bold]StaffChat![reset]%sender%>%msg%"                                        |
+| format       | Staff chat formatting example: "![bold]StaffChat![reset]%sender%>%msg%"                                        |
 
-There's also refrences inside config file
+There's also references inside config file
