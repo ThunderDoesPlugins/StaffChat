@@ -48,7 +48,6 @@ class StaffChat extends PluginBase implements Listener
       $this->format = $this->replaceColour($format);
     }
     $format = $this->format;
-    //now i hate my ide... i need line 70 yet wanting to keep this all inline...
 
     $formatted = str_replace('%sender%',$name,$format);
     $formatted = str_replace('%msg%',$message,$formatted);
@@ -65,14 +64,20 @@ class StaffChat extends PluginBase implements Listener
     switch($args[0]){
       case "help":
         $msgs = [
-         "Staff chat help",
-         "say - chat into staff chat",
+         "Staff chat help menu",
+         "say <message> - chat into staff chat",
          "on - enable chatting mode",
          "off - disable chatting mode",
          "toggle - toggle chatting mode",
-         "config - config command",
-         "reload - reloads",
+         //"config - config command",//maybe latter...
+         "reload - reloads and flushes internal data",
          "attach - attach console into staff chat",
+         //"check <player> - checks other player status",
+         //"setl [-fs] <player> <true|false> - sets other players listen status",
+         //"setc [-fs] <player> <true|false> - sets other players chat status",
+         //"-f to forcefully set player status regardless of their permission",
+         //"-s silently sets staffchat status",
+         "author - show author info",
          //" - ",
         ];
         foreach($msgs as $msg) $sender->sendMessage(TextFormat::GOLD.$msg);
@@ -88,8 +93,7 @@ class StaffChat extends PluginBase implements Listener
         if($sender->hasPermission(self::permRead)) {
           $this->setChatting($sender,true);
           $sender->sendMessage(TextFormat::GREEN.'[ON] All messages will now go directly into STAFF chat!');
-        }//i hate my ide...
-        else $sender->sendMessage(self::errPerm);
+        } else $sender->sendMessage(self::errPerm);
         break;
       case "off":
         if($sender->hasPermission(self::permRead)) {
@@ -99,8 +103,8 @@ class StaffChat extends PluginBase implements Listener
         break;
       case "toggle":
         if($sender->hasPermission(self::permRead)) {
-          $this->setChatting($sender,!$this->getState($sender));
-          $sender->sendMessage(TextFormat::GREEN."Staff Chat: ".$this->getState($sender));
+          $this->setChatting($sender,!$this->isChatting($sender));
+          $sender->sendMessage(TextFormat::GREEN."Staff Chat: ".$this->getReadableState($sender));
         } else $sender->sendMessage(self::errPerm);
         break;
 
@@ -140,7 +144,17 @@ class StaffChat extends PluginBase implements Listener
         } else {
           $sender->sendMessage("/staffchat attach <true|false>");
         }
-        $sender->sendMessage(TextFormat::GREEN.'Console State: '.$this->getConsoleState());
+        $sender->sendMessage(TextFormat::GREEN.'Console State: '.$this->getReadableConsoleState());
+        break;
+      case "author":
+      case "authors":
+      case "credit":
+      case "credits":
+        $sender->sendMessage(TextFormat::GREEN.'Staff Chat is created by @Thunder33345');
+        $sender->sendMessage(TextFormat::GREEN.'Plugin repo: github.com/ThunderDoesPlugins/StaffChat');
+        $sender->sendMessage(TextFormat::GREEN.'My Github: github.com/Thunder33345');
+        $sender->sendMessage(TextFormat::GREEN.'My Plugin Github: github.com/ThunderDoesPlugins Go over there to grab some free goodies like this!');
+        $sender->sendMessage(TextFormat::GREEN.'My Personal Twitter Account: twitter.com/Thunder33345 or @thunder33345 (feel free to ask for bug fixes!)');
         break;
       default:
         $sender->sendMessage(TextFormat::RED."Command Not Found");
@@ -156,7 +170,6 @@ class StaffChat extends PluginBase implements Listener
     if(substr($message,0,1) === "/") return;
     if($sub == $this->prefix) {
       if(!$player->hasPermission(self::permChat)) {
-        $player->sendMessage(self::errPerm);
         return;
       }
       $event->setCancelled(true);
@@ -198,30 +211,29 @@ class StaffChat extends PluginBase implements Listener
     return $string;
   }
 
-  private function isChatting($player)
+  public function isChatting($player)
   {
     if($player instanceof CommandSender) $player = $player->getName();
     $player = strtolower($player);
     if(isset($this->chatting[$player])) return $this->chatting[$player]; else return false;
   }
 
-  private function setChatting($player,bool $state)
+  public function setChatting($player,bool $state)
   {
     if($player instanceof CommandSender) $player = $player->getName();
     $player = strtolower($player);
     $this->chatting[$player] = $state;
   }
 
-  private function getState($player)
+  public function getReadableState($player,string $true = "On",string $false = "Off"): string
   {
-    if($player instanceof CommandSender) $player = $player->getName();
-    $player = strtolower($player);
-    if(isset($this->chatting[$player])) if($this->chatting[$player]) return "on"; else return "off"; else
-      return "off";
+    if($this->isChatting($player)) return $true; else return $false;
   }
 
-  private function getConsoleState()
+  public function getConsoleState(): bool { return $this->console; }
+
+  public function getReadableConsoleState(string $true = "Attached",string $false = "Detached"): string
   {
-    if($this->console) return "Attached"; else return "Detached";
+    if($this->console) return $true; else return $false;
   }
 }
