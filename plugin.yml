@@ -23,3 +23,6 @@ permissions:
       staffchat.attach:
         default: op
         description: "Attach console into staff chat"
+      staffchat.check:
+        default: op
+        description: "Check other players status"

@@ -44,12 +44,10 @@ class StaffChat extends PluginBase implements Listener
   public function broadcast($name,$message)
   {
     if(!isset($this->format) OR $this->format === "") {
-      $format = $this->getConfig()->get("format");
-      $this->format = $this->replaceColour($format);
+      $this->format = $this->replaceColour($this->getConfig()->get("format"));
     }
-    $format = $this->format;
 
-    $formatted = str_replace('%sender%',$name,$format);
+    $formatted = str_replace('%sender%',$name,$this->format);
     $formatted = str_replace('%msg%',$message,$formatted);
     foreach($this->getServer()->getOnlinePlayers() as $player){
       if(!$player->hasPermission('staffchat.read')) continue;
@@ -71,12 +69,13 @@ class StaffChat extends PluginBase implements Listener
          "toggle - toggle chatting mode",
          //"config - config command",//maybe latter...
          "reload - reloads and flushes internal data",
-         "attach - attach console into staff chat",
-         //"check <player> - checks other player status",
+         "attach <true|false> - attach console into staff chat",
+         "check <player> - checks other player status",
          //"setl [-fs] <player> <true|false> - sets other players listen status",
          //"setc [-fs] <player> <true|false> - sets other players chat status",
          //"-f to forcefully set player status regardless of their permission",
          //"-s silently sets staffchat status",
+         //"-n dont notify other staff(only for players with insufficient permissions)",
          "author - show author info",
          //" - ",
         ];
@@ -146,6 +145,20 @@ class StaffChat extends PluginBase implements Listener
         }
         $sender->sendMessage(TextFormat::GREEN.'Console State: '.$this->getReadableConsoleState());
         break;
+      case "check":
+        if(!$sender->hasPermission('staffchat.check')){
+          $sender->sendMessage(self::errPerm);
+          return;
+        }
+        if(($player = $this->getServer()->getPlayer($args[1])) === null){
+          $sender->sendMessage('Player "'.$args[1].'" cant be found');
+          return;
+        }
+        $sender->sendMessage('Status of "'.$player->getName().'"');
+        $sender->sendMessage('Can chat: '.(string)$player->hasPermission(self::permChat));
+        $sender->sendMessage('Can read: '.(string)$player->hasPermission(self::permRead));
+        $sender->sendMessage('Is chatting: '.(string)$this->isChatting($player));
+        break;
       case "author":
       case "authors":
       case "credit":
@@ -168,7 +181,7 @@ class StaffChat extends PluginBase implements Listener
     $player = $event->getPlayer();
     $sub = strtolower(substr($message,0,strlen($this->prefix)));
     if(substr($message,0,1) === "/") return;
-    if($sub == $this->prefix) {
+    if($sub === $this->prefix) {
       if(!$player->hasPermission(self::permChat)) {
         return;
       }
