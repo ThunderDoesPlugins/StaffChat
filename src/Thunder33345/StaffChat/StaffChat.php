@@ -124,7 +124,7 @@ class StaffChat extends PluginBase implements Listener
         }
         $this->chatting = [];
 
-        $this->format = [];
+        $this->format = '';
         $sender->sendMessage(TextFormat::GREEN."Successfully flushed internal data...");
         break;
       case "attach":
