@@ -24,4 +24,4 @@ Configs:
 
 There's also references inside config file
 
-If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here if you do so
+#If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here if you do so
