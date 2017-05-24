@@ -8,6 +8,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
 
@@ -41,12 +42,9 @@ class StaffChat extends PluginBase implements Listener
 
   }
 
-  public function broadcast($name,$message)
+  private function broadcast($name,$message)
   {
-    if(!isset($this->format) OR $this->format === "") {
-      $this->format = $this->replaceColour($this->getConfig()->get("format"));
-    }
-
+    if(!isset($this->format) OR $this->format === "") $this->format = $this->replaceColour($this->getConfig()->get("format"));
     $formatted = str_replace('%sender%',$name,$this->format);
     $formatted = str_replace('%msg%',$message,$formatted);
     foreach($this->getServer()->getOnlinePlayers() as $player){
@@ -56,30 +54,30 @@ class StaffChat extends PluginBase implements Listener
     if($this->console) $this->getServer()->getLogger()->info('[Staff Chat] '.$formatted);
   }
 
+  /**
+   * @param $name String Plugin's name
+   * @param $message String Plugin's message
+   * @param bool $append weather to append [Plugin] into name
+   */
+  public function pluginBroadcast($name,$message,bool $append = true)
+  {
+    if($append) $this->broadcast('[Plugin]'.$name,$message); else $this->broadcast($name,$message);
+  }
+
   public function onCommand(CommandSender $sender,Command $command,$label,array $args)
   {
     if(!isset($args[0])) $args[0] = "help";
     switch($args[0]){
       case "help":
-        $msgs = [
-         "Staff chat help menu",
-         "say <message> - chat into staff chat",
-         "on - enable chatting mode",
-         "off - disable chatting mode",
-         "toggle - toggle chatting mode",
-         //"config - config command",//maybe latter...
-         "reload - reloads and flushes internal data",
-         "attach <true|false> - attach console into staff chat",
-         "check <player> - checks other player status",
-         //"setl [-fs] <player> <true|false> - sets other players listen status",
-         //"setc [-fs] <player> <true|false> - sets other players chat status",
-         //"-f to forcefully set player status regardless of their permission",
-         //"-s silently sets staffchat status",
-         //"-n dont notify other staff(only for players with insufficient permissions)",
-         "author - show author info",
-         //" - ",
+        $msgs = ['Staff chat help menu','say <message> - chat into staff chat','on - enable chatting mode','off - disable chatting mode','toggle - toggle chatting mode',//'config - config command',//maybe latter...
+         'reload - reloads and flushes internal data','attach <true|false> - attach console into staff chat','check <player> - checks other player status',//'setl [-fs] <player> <true|false> - sets other players listen status',
+          //'setc [-fs] <player> <true|false> - sets other players chat status',
+          //'-f to forcefully set player status regardless of their permission',
+          //'-s silently sets staffchat status',
+          //'-n dont notify other staff(only for players with insufficient permissions)',
+         'author - show author info',//' - ',
         ];
-        foreach($msgs as $msg) $sender->sendMessage(TextFormat::GOLD.$msg);
+        foreach($msgs as $msg) $sender->sendMessage(TextFormat::GOLD."Staff Chat Help> ".$msg);
         break;
       case "say":
         if($sender->hasPermission(self::permChat) OR $sender instanceof ConsoleCommandSender) {
@@ -131,40 +129,54 @@ class StaffChat extends PluginBase implements Listener
         if(isset($args[1])) switch($args[1]){
           case "on":
           case "true":
-            $this->console = true;
+            $this->setConsoleState(true);
+            $this->getLogger()->notice("Console has been attached to staff chat by ".$sender->getName());
             break;
           case "false":
           case "off":
-            $this->console = false;
+            $this->getLogger()->notice("Console has been detach from staff chat by ".$sender->getName());
+            $this->setConsoleState(false);
             break;
           default:
             $sender->sendMessage("/staffchat attach <true|false>");
             break;
-        } else {
-          $sender->sendMessage("/staffchat attach <true|false>");
-        }
+        } else $sender->sendMessage("/staffchat attach <true|false>");
         $sender->sendMessage(TextFormat::GREEN.'Console State: '.$this->getReadableConsoleState());
         break;
       case "check":
-        if(!$sender->hasPermission('staffchat.check')){
+        if(!$sender->hasPermission('staffchat.check')) {
           $sender->sendMessage(self::errPerm);
           return;
         }
-        if(($player = $this->getServer()->getPlayer($args[1])) === null){
+        if(!isset($args[1])) {
+          if($sender instanceof Player) {
+            $sender->sendMessage('No player provided using yourself instated');
+            $args[1] = $sender->getName();
+          } else {
+            $sender->sendMessage("Please input player's name");
+          }
+
+        }
+        if(($player = $this->getServer()->getPlayer($args[1])) === null) {
           $sender->sendMessage('Player "'.$args[1].'" cant be found');
           return;
         }
         $sender->sendMessage('Status of "'.$player->getName().'"');
-        $sender->sendMessage('Can chat: '.(string)$player->hasPermission(self::permChat));
-        $sender->sendMessage('Can read: '.(string)$player->hasPermission(self::permRead));
-        $sender->sendMessage('Is chatting: '.(string)$this->isChatting($player));
+        $sender->sendMessage('Can chat: '.$this->readableTrueFalse($player->hasPermission(self::permChat)),'yes','no');
+        $sender->sendMessage('Can read: '.$this->readableTrueFalse($player->hasPermission(self::permRead)),'yes','no');
+        $sender->sendMessage('Is chatting: '.$this->getReadableState($player,'yes','no'));
         break;
       case "author":
       case "authors":
       case "credit":
       case "credits":
+      case "v":
+      case "ver":
+      case "version":
+        $sender->sendMessage(TextFormat::GREEN.'Staff Chat Running Version: '.$this->getDescription()->getVersion());
         $sender->sendMessage(TextFormat::GREEN.'Staff Chat is created by @Thunder33345');
         $sender->sendMessage(TextFormat::GREEN.'Plugin repo: github.com/ThunderDoesPlugins/StaffChat');
+        $sender->sendMessage(TextFormat::GREEN.'My discord server invite is there');
         $sender->sendMessage(TextFormat::GREEN.'My Github: github.com/Thunder33345');
         $sender->sendMessage(TextFormat::GREEN.'My Plugin Github: github.com/ThunderDoesPlugins Go over there to grab some free goodies like this!');
         $sender->sendMessage(TextFormat::GREEN.'My Personal Twitter Account: twitter.com/Thunder33345 or @thunder33345 (feel free to ask for bug fixes!)');
@@ -182,10 +194,10 @@ class StaffChat extends PluginBase implements Listener
     $sub = strtolower(substr($message,0,strlen($this->prefix)));
     if(substr($message,0,1) === "/") return;
     if($sub === $this->prefix) {
+      $event->setCancelled(true);
       if(!$player->hasPermission(self::permChat)) {
         return;
       }
-      $event->setCancelled(true);
       $message = substr($message,strlen($this->prefix));
       $this->broadcast($player->getName(),$message);
     } elseif($this->isChatting($player)) {
@@ -224,29 +236,78 @@ class StaffChat extends PluginBase implements Listener
     return $string;
   }
 
-  public function isChatting($player)
+  /*
+   * Public APIs
+   * for plugin integrations
+   */
+
+  /**
+   * checks if player is using chatting mode
+   * @param $player string|Player|CommandSender Player to check
+   * @return bool player is chatting status
+   */
+  public function isChatting($player): bool
   {
-    if($player instanceof CommandSender) $player = $player->getName();
+    if($player instanceof CommandSender) if($player instanceof Player) $player = $player->getName(); else return false;
     $player = strtolower($player);
     if(isset($this->chatting[$player])) return $this->chatting[$player]; else return false;
   }
 
+  /**
+   * sets player to chatting mode
+   * @param $player string|Player|CommandSender Player to set
+   * @param bool $state
+   */
   public function setChatting($player,bool $state)
   {
-    if($player instanceof CommandSender) $player = $player->getName();
+    if($player instanceof CommandSender) if($player instanceof Player) $player = $player->getName(); else return;
     $player = strtolower($player);
     $this->chatting[$player] = $state;
   }
 
+  /**
+   * get readable player chatting state
+   * @param $player string|Player|CommandSender
+   * @param string $true what to return if true
+   * @param string $false what to return if false
+   * @return string result in string
+   */
   public function getReadableState($player,string $true = "On",string $false = "Off"): string
   {
-    if($this->isChatting($player)) return $true; else return $false;
+    return $this->readableTrueFalse($this->isChatting($player),$true,$false);
   }
 
+  /**
+   * sets console attachment state
+   */
+  public function setConsoleState(bool $state) { $this->console = $state; }
+
+  /**
+   * gets if console is attached to staff chat
+   * @return bool
+   */
   public function getConsoleState(): bool { return $this->console; }
 
+  /**
+   * get readable console attachment state
+   * @param string $true what to return if true
+   * @param string $false what to return if false
+   * @return string result in string
+   */
   public function getReadableConsoleState(string $true = "Attached",string $false = "Detached"): string
   {
-    if($this->console) return $true; else return $false;
+    return $this->readableTrueFalse($this->console,$true,$false);
+  }
+
+  /**
+   * readable true false
+   * @param bool $statement
+   * @param string $true what to return if true
+   * @param string $false what to return if false
+   * @return string result in string
+   */
+  public function readableTrueFalse(bool $statement,$true = 'true',$false = 'false')
+  {
+    if($statement) return $true; else return $false;
   }
 }
