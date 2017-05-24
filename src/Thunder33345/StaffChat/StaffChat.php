@@ -20,7 +20,6 @@ class StaffChat extends PluginBase implements Listener
   private $console = true;
   private $prefix = ".";
   private $format;
-
   private $chatting = [];
 
   public function onLoad()
@@ -88,20 +87,26 @@ class StaffChat extends PluginBase implements Listener
 
       case "on":
         if($sender->hasPermission(self::permRead)) {
-          $this->setChatting($sender,true);
-          $sender->sendMessage(TextFormat::GREEN.'[ON] All messages will now go directly into STAFF chat!');
+          if($sender instanceof Player) {
+            $this->setChatting($sender,true);
+            $sender->sendMessage(TextFormat::GREEN.'[ON] All messages will now go directly into STAFF chat!');
+          } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
         break;
       case "off":
         if($sender->hasPermission(self::permRead)) {
-          $this->setChatting($sender,false);
-          $sender->sendMessage(TextFormat::GREEN.'[OFF] All messages will now go into NORMAL chat!');
+          if($sender instanceof Player) {
+            $this->setChatting($sender,false);
+            $sender->sendMessage(TextFormat::GREEN.'[OFF] All messages will now go into NORMAL chat!');
+          } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
         break;
       case "toggle":
         if($sender->hasPermission(self::permRead)) {
-          $this->setChatting($sender,!$this->isChatting($sender));
-          $sender->sendMessage(TextFormat::GREEN."Staff Chat: ".$this->getReadableState($sender));
+          if($sender instanceof Player) {
+            $this->setChatting($sender,!$this->isChatting($sender));
+            $sender->sendMessage(TextFormat::GREEN."Staff Chat: ".$this->getReadableState($sender));
+          } else $sender->sendMessage('Please run this command as player');
         } else $sender->sendMessage(self::errPerm);
         break;
 
@@ -114,8 +119,7 @@ class StaffChat extends PluginBase implements Listener
         $this->console = (bool)$this->getConfig()->get('auto-attach',true);
         $this->prefix = $this->getConfig()->get('prefix',".");
 
-        foreach($this->chatting as $player => $chatting){
-          if(!$chatting) continue;
+        foreach($this->getChatting() as $player => $chatting){
           $player = $this->getServer()->getPlayerExact($player);
           $player->sendMessage(TextFormat::RED."Staff Chat> All message will now go into NORMAL chat");
         }
@@ -165,6 +169,30 @@ class StaffChat extends PluginBase implements Listener
         $sender->sendMessage('Can chat: '.$this->readableTrueFalse($player->hasPermission(self::permChat)),'yes','no');
         $sender->sendMessage('Can read: '.$this->readableTrueFalse($player->hasPermission(self::permRead)),'yes','no');
         $sender->sendMessage('Is chatting: '.$this->getReadableState($player,'yes','no'));
+        break;
+      case "list":
+        if(!$sender->hasPermission('staffchat.list')) {
+          $sender->sendMessage(self::errPerm);
+          return;
+        }
+        $canChatAndRead = [];
+        $canChat = [];
+        $canRead = [];
+        foreach($this->getServer()->getOnlinePlayers() as $onlinePlayer){
+          if($onlinePlayer->hasPermission(self::permChat) AND $onlinePlayer->hasPermission(self::permRead)) {
+            $canChatAndRead[] = $onlinePlayer->getName();
+          } else {
+            if($onlinePlayer->hasPermission(self::permChat)) $canChat[] = $onlinePlayer->getName();
+            if($onlinePlayer->hasPermission(self::permRead)) $canRead[] = $onlinePlayer->getName();
+          }
+        }
+        $chatting = $this->getChatting();
+        $sender->sendMessage('Info List Of Online Players');
+        if(count($canChatAndRead) > 0) $sender->sendMessage('Can Chat And Read('.count($canChatAndRead).') :'.implode(',',$canChatAndRead));
+        if(count($canChat) > 0) $sender->sendMessage('Can Chat('.count($canChat).') :'.implode(',',$canChat));
+        if(count($canRead) > 0) $sender->sendMessage('Can Read('.count($canRead).') :'.implode(',',$canChat));
+        if(count($chatting) > 0) $sender->sendMessage('Is Chatting('.count($chatting).'): '.implode(',',$chatting));
+        $sender->sendMessage('End Of Info List');
         break;
       case "author":
       case "authors":
@@ -254,6 +282,19 @@ class StaffChat extends PluginBase implements Listener
   }
 
   /**
+   * Get Chatting array directly
+   * @param bool $sort Sort to remove values with false
+   * @return array
+   */
+  public function getChatting($sort = true)
+  {
+    if($sort) {
+      foreach($this->chatting as $player => $chatting) if($chatting == false) unset ($this->chatting[$player]);
+    }
+    return $this->chatting;
+  }
+
+  /**
    * sets player to chatting mode
    * @param $player string|Player|CommandSender Player to set
    * @param bool $state
@@ -262,7 +303,7 @@ class StaffChat extends PluginBase implements Listener
   {
     if($player instanceof CommandSender) if($player instanceof Player) $player = $player->getName(); else return;
     $player = strtolower($player);
-    $this->chatting[$player] = $state;
+    if($state == true) $this->chatting[$player] = $state; else unset($this->chatting[$player]);
   }
 
   /**

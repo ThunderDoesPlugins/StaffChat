@@ -27,3 +27,6 @@ permissions:
       staffchat.check:
         default: op
         description: "Check other players status"
+      staffchat.list:
+        default: op
+        description: "Show info list of players"
