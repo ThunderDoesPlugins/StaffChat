@@ -8,7 +8,9 @@ Allows you to create a staff chat between staff with permissions and chatprefix
 
 ## If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here
 
-commands:
+## Commands:
+
+Command starts with /staffchat alias is /sc
 
 | Command             | Info                                                     |
 |---------------------|----------------------------------------------------------|
@@ -18,7 +20,7 @@ commands:
 | attach <true/false> | Attach console into/out of staff chat                    |
 | check [player]      | Checks player staffchat status and permissions           |
 
-Configs:
+## Configs:
 
 | Config Value | Info                                                                                                           |
 |--------------|----------------------------------------------------------------------------------------------------------------|
@@ -28,7 +30,7 @@ Configs:
 
 There's also references inside config file
 
-Permissions:
+## Permissions:
 
 | permission node  | Info                                                   |
 |------------------|--------------------------------------------------------|
