@@ -4,7 +4,7 @@
 
 Private Staff Chat Channel Plugin
 
-Allows you to create a staff chat between staff using permissions
+Allows you to create a staff chat between staff with permissions and chatprefix
 
 ## If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here
 
