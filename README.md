@@ -29,6 +29,7 @@ Configs:
 There's also references inside config file
 
 Permissions:
+
 | permission node  | Info                                                   |
 |------------------|--------------------------------------------------------|
 | staffchat.read   | Allow players to read chat                             |
