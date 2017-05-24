@@ -1,5 +1,5 @@
 name: StaffChat
-version: 1.0.0
+version: 1.0.1
 api: [2.0.0,3.0.0-ALPHA4,3.0.0-ALPHA5]
 author: Thunder33345
 website: "https://github.com/ThunderDoesPlugins/StaffChat"
