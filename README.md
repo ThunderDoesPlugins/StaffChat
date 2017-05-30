@@ -42,13 +42,27 @@ Command starts with /staffchat alias is /sc
 
 ## Configs:
 
-| Config Value | Info                                                                                                           |
-|--------------|----------------------------------------------------------------------------------------------------------------|
-| prefix       | Used to send a message directly into staff chat Example: ".hello staff" you may set it to any value you prefer |
-| auto-attach  | Automatically make console listen to staff chat on start?                                                      |
-| format       | Staff chat formatting example: "![bold]StaffChat![reset]%sender%>%msg%"                                        |
-
+| Config Value  | Info                                                                                                           |
+|---------------|----------------------------------------------------------------------------------------------------------------|
+| prefix        | Used to send a message directly into staff chat Example: ".hello staff" you may set it to any value you prefer |
+| auto-attach   | Automatically make console listen to staff chat on start?                                                      |
+| console-prefix| Console logging prefix for StaffChat                                                                           |
+| player-format | Staff chat formatting example: "![bold]StaffChat![reset]%sender%>%msg%"                                        |
+| plugin-format | Staff chat formatting for plugins                                                                              |
+| functions     | (BETA) Enable functions See #functions section below for more                                                  |
+| joinleave     | Enable join leave annouce message to staff                                                                     |
+| join/leave    | Join leave format                                                                                              |
 There's also references inside config file
+
+## Functions:
+
+You can use function by typing "$name" in staffchat and will be replaced with appopriate text
+
+|Function Name            | Usage                                                                                      |
+|-------------------------|--------------------------------------------------------------------------------------------|
+| $pos                    | Replaces it with your level,x,y,z                                                          |
+| $ping                   | Replaces $ping with bolded green and play Enderman teleport+Anvil fall sound to all staff  |
+| $near(distance number)$ | Replaces it with "Near Me(count):" and Playername(GM:mode Dist:number)                     |
 
 ## Permissions:
 
