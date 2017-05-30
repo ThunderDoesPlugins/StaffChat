@@ -31,5 +31,12 @@ plugin-format: "![bold]![gold]<Staff>[Plugin]![reset]![white]%plugin%![yellow]![
 # $pos = replace $pos with "Level: (level) X: (x) Y: (y) Z: (z)"
 # $near(distance)$ = replaces it with players that are near you using specifyed number ex $near10$
 # if you have any ideas please do suggest it over at issues or discord channle
-functions: "false"
+functions: "true"
+
+# Weather to enable staff joinleave annouce in staff channle
+joinleave: "true"
+# Join Message broadcasted to staff
+join: "![bold]![gold]<Staff>![reset] ![yellow]%staff% ![white]connected"
+# Leave Message broadcasted to staff
+leave: "![bold]![gold]<Staff>![reset] ![yellow]%staff% ![white]disconnected"
 ...

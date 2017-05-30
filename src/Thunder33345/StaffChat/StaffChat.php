@@ -8,6 +8,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\level\sound\AnvilFallSound;
 use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\Player;
@@ -26,6 +28,9 @@ class StaffChat extends PluginBase implements Listener
   private $consolePrefix;
   private $chatting = [];
 
+  private $joinMsg = '';
+  private $leaveMsg = '';
+
   public function onLoad()
   {
 
@@ -39,6 +44,14 @@ class StaffChat extends PluginBase implements Listener
     $this->prefix = $this->getConfig()->get('prefix',".");
     $this->consolePrefix = $this->getConfig()->get('console-prefix','[StaffChat] ');
     $this->getServer()->getPluginManager()->registerEvents($this,$this);
+    $this->getServer()->getPluginManager();
+
+    $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    $this->pluginFormat = $this->replaceColour($this->getConfig()->get('plugin-format'));
+    if($this->getConfig()->get('joinleave')) {
+      $this->joinMsg = $this->replaceColour($this->getConfig()->get('join'));
+      $this->leaveMsg = $this->replaceColour($this->getConfig()->get('leave'));
+    }
   }
 
   public function onDisable()
@@ -54,7 +67,7 @@ class StaffChat extends PluginBase implements Listener
 
   private function playerBroadcast(Player $player,$message)
   {
-    if(!isset($this->format) OR !is_string($this->format) OR strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    if(strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
     $formatted = str_replace('%player%',$player->getName(),$this->format);
     if($this->getConfig()->get('functions',false) == true) $message = $this->phraseFunctions($player,$message);
     $formatted = str_replace('%msg%',$this->replaceColour($message),$formatted);
@@ -67,15 +80,21 @@ class StaffChat extends PluginBase implements Listener
       $this->playerBroadcast($sender,$message);
       return;
     }
-    if(!isset($this->format) OR !is_string($this->format) OR strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    if(strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
     $formatted = str_replace('%player%',$sender->getName(),$this->format);
     $formatted = str_replace('%msg%',$this->replaceColour($message),$formatted);
     $this->rawBroadcast($formatted);
   }
 
+  /**
+   * Plugin Broadcast API
+   * @param $pluginName string Your plugin name that will be broadcasted to user
+   * @param $message string Your message to be sent to users
+   * @param string $format Your format, overwrites the defualt user prefered format, you are suggested to leave it as it is
+   */
   public function pluginBroadcast($pluginName,$message,$format = '')
   {
-    if(!isset($this->pluginFormat) OR !is_string($this->pluginFormat) OR strlen($this->pluginFormat) <= 0) $this->pluginFormat = $this->replaceColour($this->getConfig()->get('plugin-format'));
+    if(strlen($this->pluginFormat) <= 0) $this->pluginFormat = $this->replaceColour($this->getConfig()->get('plugin-format'));
     if(strlen($format) == 0) $format = $this->pluginFormat; else $format = $this->replaceColour($format);
     $formatted = str_replace('%plugin%',$pluginName,$format);
     $formatted = str_replace('%msg%',$message,$formatted);
@@ -261,6 +280,24 @@ class StaffChat extends PluginBase implements Listener
     }
   }
 
+  public function onJoin(PlayerJoinEvent $event)
+  {
+    if(!$event->getPlayer()->hasPermission(self::permRead) AND !$event->getPlayer()->hasPermission(self::permChat)) return;
+    if(!(bool)$this->getConfig()->get('joinleave')) return;
+    if(strlen($this->joinMsg) <= 0) $this->joinMsg = $this->replaceColour($this->getConfig()->get('join'));
+    $msg = str_replace('%staff%',$event->getPlayer()->getName(),$this->joinMsg);
+    $this->rawBroadcast($msg);
+  }
+
+  public function onLeave(PlayerQuitEvent $event)
+  {
+    if(!$event->getPlayer()->hasPermission(self::permRead) AND !$event->getPlayer()->hasPermission(self::permChat)) return;
+    if(!(bool)$this->getConfig()->get('joinleave')) return;
+    if(strlen($this->leaveMsg) <= 0) $this->leaveMsg = $this->replaceColour($this->getConfig()->get('leave'));
+    $msg = str_replace('%staff%',$event->getPlayer()->getName(),$this->leaveMsg);
+    $this->rawBroadcast($msg);
+  }
+
   public function onChat(PlayerCommandPreprocessEvent $event)
   {
     $message = $event->getMessage();
@@ -425,14 +462,23 @@ class StaffChat extends PluginBase implements Listener
     return $players;
   }
 
+  /**
+   * Flush config and chatting
+   * @param string $message Message to be sent to people attatched in staffchat
+   * @param bool $notify do you want to notify players in staffchat
+   */
+
   public function flush(string $message = '',bool $notify = true)
   {
     $this->getConfig()->reload();
     $this->prefix = $this->getConfig()->get('prefix',".");
     $this->console = (bool)$this->getConfig()->get('auto-attach',true);
     $this->consolePrefix = $this->getConfig()->get('console-prefix','[StaffChat] ');
-    $this->format = '';
-    $this->pluginFormat = '';
+    $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    $this->pluginFormat = $this->replaceColour($this->getConfig()->get('plugin-format'));
+    $this->joinMsg = $this->replaceColour($this->getConfig()->get('join'));
+    $this->leaveMsg = $this->replaceColour($this->getConfig()->get('leave'));
+
     if($notify) {
       if(strlen($message) == 0) $message = TextFormat::RED.'Staff Chat> All message will now go into NORMAL chat';
       foreach($this->getChatting() as $player => $chatting){
