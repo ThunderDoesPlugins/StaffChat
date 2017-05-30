@@ -14,7 +14,7 @@ To download compiled PHAR, please click the poggit view button above then scroll
 
 Put this in your Plugins, start the server to generate a config file, you may edit the config to suit your needs scroll down for more info on configs
 
-To chat into staff chat ty0e your prefix followed by your message, no spaces are required
+To chat into staff chat tye your prefix followed by your message, no spaces are required
 For example prefix is . so typing ".this message will be sent to staff chat" will sent that message to staff chat letting all online staff to know
 
 To chat into staff chat without prefix or commands /sc on this will put all of your message into staff chat convenience if you wish to have long conversations /sc off when you are done
@@ -46,17 +46,17 @@ Command starts with /staffchat alias is /sc
 |---------------|----------------------------------------------------------------------------------------------------------------|
 | prefix        | Used to send a message directly into staff chat Example: ".hello staff" you may set it to any value you prefer |
 | auto-attach   | Automatically make console listen to staff chat on start?                                                      |
-| console-prefix| Console logging prefix for StaffChat                                                                           |
+| console-prefix| Console logging prefix for Staff Chat                                                                           |
 | player-format | Staff chat formatting example: "![bold]StaffChat![reset]%sender%>%msg%"                                        |
 | plugin-format | Staff chat formatting for plugins                                                                              |
 | functions     | (BETA) Enable functions See #functions section below for more                                                  |
-| joinleave     | Enable join leave annouce message to staff                                                                     |
+| joinleave     | Enable join leave announce message to staff                                                                     |
 | join/leave    | Join leave format                                                                                              |
 There's also references inside config file
 
 ## Functions:
 
-You can use function by typing "$name" in staffchat and will be replaced with appopriate text
+You can use function by typing "$name" in staff chat and will be replaced with appropriate text
 
 |Function Name            | Usage                                                                                      |
 |-------------------------|--------------------------------------------------------------------------------------------|
