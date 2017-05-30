@@ -8,6 +8,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\level\sound\AnvilFallSound;
+use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\TextFormat;
@@ -82,7 +84,38 @@ class StaffChat extends PluginBase implements Listener
 
   private function phraseFunctions(Player $player,$message)
   {
-    //todo
+    $functions = ['$pos','$ping','$near'];
+    foreach($functions as $function){
+      if(strpos($message,$function) === false) continue;
+      switch($function){
+        case '$pos':
+          $vec = $player->floor();
+          $pos = "Level: ".$player->getLevel()->getName().' X: '.$vec->x.' Y: '.$vec->y.' Z: '.$vec->x;
+          $message = str_replace('$pos',$pos,$message);
+          break;
+        case '$ping':
+          foreach($this->getReadPlayers() as $notify){
+            $notify->getLevel()->addSound(new EndermanTeleportSound($notify),$notify);
+            $notify->getLevel()->addSound(new AnvilFallSound($notify),$notify);
+          }
+          $message = str_replace('$ping',TextFormat::BOLD.TextFormat::GREEN.'$ping'.TextFormat::RESET,$message);
+          break;
+        case '$near':
+          preg_match_all('/\$near([0-9]+)\$/',$message,$matches);
+          foreach($matches[0] as $key => $match){
+            if(strpos($message,$match) === false) continue;
+            $distance = $matches[1][$key];
+            $players = [];
+            foreach($player->getLevel()->getPlayers() as $other){
+              if(($dist = $other->distance($player)) > $distance) continue;
+              $players[] = $other->getName().' (GM:'.$this->getGamemode($other->getGamemode()).' Dist:'.$dist.')';
+              $result = 'Near me('.count($players).'): '.implode(', ',$players);
+              $message = str_replace($match,$result,$message);
+            }
+          }
+          break;
+      }
+    }
     return $message;
   }
 
@@ -249,6 +282,21 @@ class StaffChat extends PluginBase implements Listener
       $event->setCancelled(true);
       $this->playerBroadcast($player,$message);
     }
+  }
+
+  private function getGamemode($mode)
+  {
+    switch((int)$mode){
+      case Player::SURVIVAL:
+        return "S";
+      case Player::CREATIVE:
+        return "C";
+      case Player::ADVENTURE:
+        return "A";
+      case Player::SPECTATOR:
+        return "SPEC";
+    }
+    return "UNKNOWN";
   }
 
   /**

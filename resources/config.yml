@@ -23,6 +23,13 @@ player-format: "![bold]![gold]<Staff>![reset]![white]%player%![yellow]![bold]>![
 # Only used if plugin did not supply a custom format
 plugin-format: "![bold]![gold]<Staff>[Plugin]![reset]![white]%plugin%![yellow]![bold]>![reset] ![white]%msg%"
 
-# Functions (placeholder)
+# Functions
+# BETA disabled by defualt
+# to use type them into staffchat
+# current functions:
+# $ping = plays sound to the staff and hilights '$ping'
+# $pos = replace $pos with "Level: (level) X: (x) Y: (y) Z: (z)"
+# $near(distance)$ = replaces it with players that are near you using specifyed number ex $near10$
+# if you have any ideas please do suggest it over at issues or discord channle
 functions: "false"
 ...
