@@ -18,8 +18,10 @@ class StaffChat extends PluginBase implements Listener
   const permRead = 'staffchat.read';
   const errPerm = TextFormat::RED.'Insufficient Permissions';
   private $console = true;
-  private $prefix = ".";
-  private $format;
+  private $prefix = '.';
+  private $format = '';
+  private $pluginFormat;
+  private $consolePrefix;
   private $chatting = [];
 
   public function onLoad()
@@ -33,6 +35,7 @@ class StaffChat extends PluginBase implements Listener
     $this->saveDefaultConfig();
     $this->console = (bool)$this->getConfig()->get('auto-attach',true);
     $this->prefix = $this->getConfig()->get('prefix',".");
+    $this->consolePrefix = $this->getConfig()->get('console-prefix','[StaffChat] ');
     $this->getServer()->getPluginManager()->registerEvents($this,$this);
   }
 
@@ -41,26 +44,46 @@ class StaffChat extends PluginBase implements Listener
 
   }
 
-  private function broadcast($name,$message)
+  private function rawBroadcast($message)
   {
-    if(!isset($this->format) OR $this->format === "") $this->format = $this->replaceColour($this->getConfig()->get("format"));
-    $formatted = str_replace('%sender%',$name,$this->format);
-    $formatted = str_replace('%msg%',$message,$formatted);
-    foreach($this->getServer()->getOnlinePlayers() as $player){
-      if(!$player->hasPermission('staffchat.read')) continue;
-      $player->sendMessage($formatted);
-    }
-    if($this->console) $this->getServer()->getLogger()->info('[Staff Chat] '.$formatted);
+    foreach($this->getReadPlayers() as $player) $player->sendMessage($message);
+    if($this->console) $this->getServer()->getLogger()->info($this->consolePrefix.$message);
   }
 
-  /**
-   * @param $name String Plugin's name
-   * @param $message String Plugin's message
-   * @param bool $append weather to append [Plugin] into name
-   */
-  public function pluginBroadcast($name,$message,bool $append = true)
+  private function playerBroadcast(Player $player,$message)
   {
-    if($append) $this->broadcast('[Plugin]'.$name,$message); else $this->broadcast($name,$message);
+    if(!isset($this->format) OR !is_string($this->format) OR strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    $formatted = str_replace('%player%',$player->getName(),$this->format);
+    if($this->getConfig()->get('functions',false) == true) $message = $this->phraseFunctions($player,$message);
+    $formatted = str_replace('%msg%',$this->replaceColour($message),$formatted);
+    $this->rawBroadcast($formatted);
+  }
+
+  private function consoleBroadcast(CommandSender $sender,$message)
+  {
+    if($sender instanceof Player) {
+      $this->playerBroadcast($sender,$message);
+      return;
+    }
+    if(!isset($this->format) OR !is_string($this->format) OR strlen($this->format) <= 0) $this->format = $this->replaceColour($this->getConfig()->get('player-format'));
+    $formatted = str_replace('%player%',$sender->getName(),$this->format);
+    $formatted = str_replace('%msg%',$this->replaceColour($message),$formatted);
+    $this->rawBroadcast($formatted);
+  }
+
+  public function pluginBroadcast($pluginName,$message,$format = '')
+  {
+    if(!isset($this->pluginFormat) OR !is_string($this->pluginFormat) OR strlen($this->pluginFormat) <= 0) $this->pluginFormat = $this->replaceColour($this->getConfig()->get('plugin-format'));
+    if(strlen($format) == 0) $format = $this->pluginFormat; else $format = $this->replaceColour($format);
+    $formatted = str_replace('%plugin%',$pluginName,$format);
+    $formatted = str_replace('%msg%',$message,$formatted);
+    $this->rawBroadcast($formatted);
+  }
+
+  private function phraseFunctions(Player $player,$message)
+  {
+    //todo
+    return $message;
   }
 
   public function onCommand(CommandSender $sender,Command $command,$label,array $args)
@@ -81,7 +104,7 @@ class StaffChat extends PluginBase implements Listener
       case "say":
         if($sender->hasPermission(self::permChat) OR $sender instanceof ConsoleCommandSender) {
           array_shift($args);
-          $this->broadcast($sender->getName(),implode(" ",$args));
+          $this->consoleBroadcast($sender,implode(" ",$args));
         } else $sender->sendMessage(self::errPerm);
         break;
 
@@ -115,17 +138,7 @@ class StaffChat extends PluginBase implements Listener
           $sender->sendMessage(self::errPerm);
           break;
         }
-        $this->getConfig()->reload();
-        $this->console = (bool)$this->getConfig()->get('auto-attach',true);
-        $this->prefix = $this->getConfig()->get('prefix',".");
-
-        foreach($this->getChatting() as $player => $chatting){
-          $player = $this->getServer()->getPlayerExact($player);
-          $player->sendMessage(TextFormat::RED."Staff Chat> All message will now go into NORMAL chat");
-        }
-        $this->chatting = [];
-
-        $this->format = '';
+        $this->flush();
         $sender->sendMessage(TextFormat::GREEN."Successfully flushed internal data...");
         break;
       case "attach":
@@ -227,14 +240,14 @@ class StaffChat extends PluginBase implements Listener
         return;
       }
       $message = substr($message,strlen($this->prefix));
-      $this->broadcast($player->getName(),$message);
+      $this->playerBroadcast($player,$message);
     } elseif($this->isChatting($player)) {
       if(!$player->hasPermission(self::permChat)) {
         $this->setChatting($player,false);
         return;
       }
       $event->setCancelled(true);
-      $this->broadcast($player->getName(),$message);
+      $this->playerBroadcast($player,$message);
     }
   }
 
@@ -320,6 +333,7 @@ class StaffChat extends PluginBase implements Listener
 
   /**
    * sets console attachment state
+   * @param bool $state weather console is attached
    */
   public function setConsoleState(bool $state) { $this->console = $state; }
 
@@ -350,5 +364,33 @@ class StaffChat extends PluginBase implements Listener
   public function readableTrueFalse(bool $statement,$true = 'true',$false = 'false')
   {
     if($statement) return $true; else return $false;
+  }
+
+  /**
+   * Gets all players that can read staff chat
+   * @return Player[]
+   */
+  public function getReadPlayers()
+  {
+    $players = [];
+    foreach($this->getServer()->getOnlinePlayers() as $player) if($player->hasPermission(self::permRead)) $players[] = $player;
+    return $players;
+  }
+
+  public function flush(string $message = '',bool $notify = true)
+  {
+    $this->getConfig()->reload();
+    $this->prefix = $this->getConfig()->get('prefix',".");
+    $this->console = (bool)$this->getConfig()->get('auto-attach',true);
+    $this->consolePrefix = $this->getConfig()->get('console-prefix','[StaffChat] ');
+    $this->format = '';
+    $this->pluginFormat = '';
+    if($notify) {
+      if(strlen($message) == 0) $message = TextFormat::RED.'Staff Chat> All message will now go into NORMAL chat';
+      foreach($this->getChatting() as $player => $chatting){
+        $this->getServer()->getPlayerExact($player)->sendMessage($message);
+      }
+    }
+    $this->chatting = [];
   }
 }

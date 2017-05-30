@@ -1,12 +1,28 @@
 ---
 # Config
+
 # Chat prefix to treat as staff chat
 # This will work if the prefix is more then one character long
 prefix: "."
+
 # Automatically attaches console into staff chat on startup
-auto-attach: true
-# Chat Format
+auto-attach: "true"
+
+# Console prefix for StaffChat
+# Can be safely omitted
+console-prefix: '[StaffChat] '
+
+# Chat Formats
 # Colour code info, this uses PMMP TextFormat constants, ![constant] casing is automatically dealt with
 # This https://github.com/pmmp/PocketMine-MP/blob/master/src/pocketmine/utils/TextFormat.php show all the available constants
-format: "![bold]![gold]<Staff>![reset]![white]%sender%![yellow]![bold]>![reset] ![white]%msg%"
+
+# Player Chat Format
+player-format: "![bold]![gold]<Staff>![reset]![white]%player%![yellow]![bold]>![reset] ![white]%msg%"
+
+# Plugin Format
+# Only used if plugin did not supply a custom format
+plugin-format: "![bold]![gold]<Staff>[Plugin]![reset]![white]%plugin%![yellow]![bold]>![reset] ![white]%msg%"
+
+# Functions (placeholder)
+functions: "false"
 ...
