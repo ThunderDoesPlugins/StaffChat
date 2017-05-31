@@ -2,7 +2,7 @@
 # Config
 
 # Chat prefix to treat as staff chat
-# This will work if the prefix is more then one character long
+# This will work if the prefix is more than one character long
 prefix: "."
 
 # Automatically attaches console into staff chat on startup
@@ -24,16 +24,16 @@ player-format: "![bold]![gold]<Staff>![reset]![white]%player%![yellow]![bold]>![
 plugin-format: "![bold]![gold]<Staff>[Plugin]![reset]![white]%plugin%![yellow]![bold]>![reset] ![white]%msg%"
 
 # Functions
-# BETA disabled by defualt
+# BETA feature
 # to use type them into staffchat
 # current functions:
-# $ping = plays sound to the staff and hilights '$ping'
+# $ping = plays sound to the staff and highlights '$ping'
 # $pos = replace $pos with "Level: (level) X: (x) Y: (y) Z: (z)"
 # $near(distance)$ = replaces it with players that are near you using specifyed number ex $near10$
 # if you have any ideas please do suggest it over at issues or discord channle
 functions: "true"
 
-# Weather to enable staff joinleave annouce in staff channle
+# Weather to enable staff joinleave announce in staff channel
 joinleave: "true"
 # Join Message broadcasted to staff
 join: "![bold]![gold]<Staff>![reset] ![yellow]%staff% ![white]connected"
