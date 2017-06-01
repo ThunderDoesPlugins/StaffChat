@@ -2,11 +2,18 @@
 [<img src="https://img.shields.io/badge/Poggit-view-brightgreen.svg" width="100" height="25" />](https://poggit.pmmp.io/ci/ThunderDoesPlugins/StaffChat/StaffChat)
 [<img src="https://img.shields.io/badge/Discord-join-697EC4.svg" width="100" height="25" />](https://discord.gg/uBghvNp)
 
+<!--
+  Title: Staff Chat
+  Description: An Advance staff chat plugins for your staff members
+  Author: Thunder33345
+  -->
+<meta name='keywords' content='staffchat, staff chat, plugin, pocketmine, mcpe'>
+
 Advance private chat plugins for your staff members
 
 Allows you to create a staff chat between staff members with permissions and chat prefix
 
-### If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here if it meet reasonable quality
+If you want to make a video of it, please link back to this repo in your description, you may request your videos to be featured here if it meet reasonable quality
 
 ## How to install and use
 
