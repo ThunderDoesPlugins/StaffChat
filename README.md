@@ -82,4 +82,4 @@ You can use function by typing "$name" in staff chat and will be replaced with a
 | staffchat.check  | Allow players to check other player's staff chat status|
 | staffchat.list   | Allow players to list players staff chat status        |
 
-By default all permission nodes are granted for OPs, this is not meant to work for console!
+By default all permission nodes are granted for OPs. ;)
