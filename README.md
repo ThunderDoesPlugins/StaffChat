@@ -8,7 +8,7 @@
   Author: Thunder33345
   -->
 <meta name='keywords' content='staffchat, staff chat, plugin, pocketmine, mcpe'>
-<meta name='description' content='An Advance staff chat plugins for your staff members'>
+<meta name='description' content='An Advanced staff chat plugins for your staff members'>
 
 Advance private chat plugins for your staff members
 
@@ -20,7 +20,7 @@ If you want to make a video of it, please link back to this repo in your descrip
 
 To download compiled PHAR, please click the poggit view button above then scroll down selecting the latest by clicking on Direct for latest version, or you can click on latest release "Direct Download"
 
-Put this in your Plugins, start the server to generate a config file, you may edit the config to suit your needs scroll down for more info on configs
+Put this in your Plugins, start the server to generate a config file, you may edit the config to suit your needs scroll down for more info on configuration files
 
 To chat into staff chat type your prefix followed by your message, no spaces are required
 For example prefix is . so typing ".this message will be sent to staff chat" will sent that message to staff chat letting all online staff to know
@@ -33,11 +33,11 @@ Console can also choose to receive staff chat or not by /sc attach on/off
 
 ## Intended Usage
 
-This plugin was created to allow servers with multiple staff members to cooperate together while chatting silently between each other without /tell and with the ease of use
+This plugin was created to allow servers with multiple staff members to cooperate together while chatting silently between each other without /tell and with ease of use!
 
 ## Commands:
 
-Command starts with /staffchat alias is /sc
+StaffChat's command starts with /staffchat alias is /sc
 
 | Command             | Info                                                      |
 |---------------------|-----------------------------------------------------------|
@@ -82,4 +82,4 @@ You can use function by typing "$name" in staff chat and will be replaced with a
 | staffchat.check  | Allow players to check other player's staff chat status|
 | staffchat.list   | Allow players to list players staff chat status        |
 
-By default all permission nodes are granted for OPs
+By default all permission nodes are granted for OPs, this is not meant to work for console!
