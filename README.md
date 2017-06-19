@@ -41,8 +41,8 @@ StaffChat's command starts with /staffchat alias is /sc
 
 | Command             | Info                                                      |
 |---------------------|-----------------------------------------------------------|
-| say                 | Send a message to staff channel(this is meant for console)|
-| on/off/toggle       | Switch current chat mode(chats directly into staff chat)  |
+| say                 | Send a message to staff channel *(this is meant to be sent in the console)*|
+| on/off/toggle       | Switch current chat mode *(chats directly into staff chat)*  |
 | reload              | Reloads configs and flushes internal data                 |
 | attach <true/false> | Attach console into/out of staff chat                     |
 | check [player]      | Checks player staff chat status and permissions           |
