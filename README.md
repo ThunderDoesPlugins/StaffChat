@@ -37,7 +37,7 @@ This plugin was created to allow servers with multiple staff members to cooperat
 
 ## Commands:
 
-StaffChat's command starts with /staffchat alias is /sc
+Commands start with /staffchat alias is /sc
 
 | Command             | Info                                                      |
 |---------------------|-----------------------------------------------------------|
