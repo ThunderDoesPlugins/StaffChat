@@ -25,7 +25,7 @@ Put this in your Plugins, start the server to generate a config file, you may ed
 To chat into staff chat type your prefix followed by your message, no spaces are required
 For example prefix is . so typing ".this message will be sent to staff chat" will sent that message to staff chat letting all online staff to know
 
-To chat into staff chat without prefix or commands /sc on this will put all of your message into staff chat convenience if you wish to have long conversations /sc off when you are done
+To chat into staff chat without prefix or commands /sc on this will put all of your message into staff chat for convenience if you wish to have long conversations /sc off when you are done
 
 To chat into staff chat as console type /sc say <message here>
 
