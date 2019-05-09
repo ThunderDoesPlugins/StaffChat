@@ -14,7 +14,7 @@ commands:
 
 permissions:
   staffchat:
-    default: false
+    default: op
     children:
       staffchat.read:
         default: op
