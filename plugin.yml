@@ -11,6 +11,7 @@ commands:
   staffchat:
     description: "Staff chat command"
     aliases: ['sc']
+    permission: "staffchat"
 
 permissions:
   staffchat:
