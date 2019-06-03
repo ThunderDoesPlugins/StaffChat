@@ -11,7 +11,7 @@ commands:
   staffchat:
     description: "Staff chat command"
     aliases: ['sc']
-    permission: "staffchat"
+    permission: "staffchat.command"
 
 permissions:
   staffchat:
@@ -23,6 +23,9 @@ permissions:
       staffchat.chat:
         default: op
         description: "Chat into staff chat"
+      staffchat.command:
+        default: op
+        description: "Use the staff chat command"
       staffchat.attach:
         default: op
         description: "Attach console into staff chat"
@@ -32,3 +35,6 @@ permissions:
       staffchat.list:
         default: op
         description: "Show info list of players"
+      staffchat.reload:
+        default: false
+        description: "Reload staff chat internal data"
