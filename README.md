@@ -65,7 +65,7 @@ There's also references inside config file
 
 ## Functions:
 
-You can use function by typing "$name" in staff chat and will be replaced with appropriate text
+You can use function by typing "$name" in staff chat and will be replaced with appropriate text(buggy might not work)
 
 |Function Name            | Usage                                                                                      |
 |-------------------------|--------------------------------------------------------------------------------------------|
@@ -84,3 +84,6 @@ You can use function by typing "$name" in staff chat and will be replaced with a
 | staffchat.list   | Allow players to list players staff chat status        |
 
 By default all permission nodes are granted for operators.
+
+## Video
+[Tutorial by JJ Birdman](https://www.youtube.com/watch?v=wdwaLXjw9Xs)
