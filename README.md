@@ -1,1 +1,1 @@
-This branch is specifically for development and is a temporary branch until I get StaffChat officially working in PM4, once it's done it will be pushed to PM4 branch https://github.com/ThunderDoesPlugins/StaffChat/tree/PM4
+This branch is specifically for PM4 development and is a temporary branch until I get StaffChat officially working in PM4 and rewrite complete. Once it's done it will be pushed to PM4 branch https://github.com/ThunderDoesPlugins/StaffChat/tree/PM4
